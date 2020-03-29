@@ -11,11 +11,11 @@ import telemetry_bis_pb2
 class gRPCMdtDialout(mdt_dialout_pb2_grpc.gRPCMdtDialoutServicer):
     def MdtDialout(self, request_iterator, context):
         for response in request_iterator:
-            # print(response)  # print not decoded received message.
+            # logging.info(response)  # print not decoded received message.
             tele_msg = telemetry_bis_pb2.Telemetry()
             tele_msg.ParseFromString(response.data)
             parsed_data = json_format.MessageToJson(tele_msg) # get data in json
-            print(parsed_data) # print received telemetry data as json
+            logging.info(parsed_data) # print received telemetry data as json
             yield 
 
 
@@ -28,5 +28,8 @@ def serve():
 
 
 if __name__ == '__main__':
-    logging.basicConfig()
-    serve()
+    logging.basicConfig(level=logging.INFO)
+    try:
+        serve()
+    except(KeyboardInterrupt):
+        logging.info('Manually stopped by keyboard interruption')
